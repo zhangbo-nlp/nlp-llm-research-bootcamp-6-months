@@ -1,93 +1,122 @@
-# Week 04 - Probability, Statistics and Experiments
+# Week 04 文本分类 Baseline 与评测指标
 
 ## 本周定位
 
-机器学习实验离不开概率统计。不需要马上掌握严格证明，但必须理解训练集/测试集、均值方差、准确率、混淆矩阵、随机种子和实验可复现。科研里很多错误不是模型错，而是实验设计错。
+本周完成第一个完整的机器学习实验：把文本转成 TF-IDF 特征，再用 Logistic Regression 做分类。
 
-建议投入：8-12 小时。
+重点不是拿高分，而是理解一个实验的基本结构：数据怎么划分、baseline 为什么重要、指标怎么看、错误样例怎么分析。
 
-## 本周目标
+如果基础较弱，只要完整跑通一个 TF-IDF 分类器，并能解释每一步，就算合格。
 
-- 理解随机变量、分布、均值、方差、采样。
-- 理解训练集、验证集、测试集的不同作用。
-- 理解分类任务常见指标：Accuracy、Precision、Recall、F1。
-- 能画简单统计图。
-- 建立实验日志习惯。
+## 本周学习主线
 
-## 理论学习
+1. 机器学习流程：数据、特征、模型、训练、预测、评测。
+2. 数据划分：train、dev、test。
+3. 文本表示：Bag-of-Words、n-gram 和 TF-IDF。
+4. 分类模型：DummyClassifier 和 Logistic Regression。
+5. 指标：accuracy、precision、recall、F1、macro-F1。
+6. 混淆矩阵和错误样例。
 
-1. 随机性  
-   数据抽样、参数初始化、batch 顺序都会影响结果，因此需要记录随机种子。
+## 建议学习内容
 
-2. 数据划分  
-   训练集用于学习参数，验证集用于调参，测试集用于最终报告。测试集不能反复调参。
+### 数据划分
 
-3. 分类指标  
-   类别不均衡时，Accuracy 可能误导；需要看 Precision、Recall 和 F1。
+重点理解：
 
-4. 统计结论  
-   单次实验结果不一定可靠，最好多次运行或至少分析错误样本。
+- train 用来训练模型。
+- dev 用来选择参数和方法。
+- test 用来做最后评估。
+- 不能看着 test 结果反复改参数。
+- 划分后要保存随机种子，后面的模型继续使用同一份划分。
 
-## 工具学习
+数据很少时，结果会比较不稳定。这不是代码一定写错了，而是需要在报告中说明限制。
 
-- NumPy 随机数：`np.random.default_rng`。
-- pandas 基础表格操作。
-- scikit-learn 指标：`train_test_split`、`classification_report`、`confusion_matrix`。
-- Matplotlib 或 seaborn 画柱状图、直方图。
+### TF-IDF
 
-## 推荐资料
+先理解直觉：
 
-- pandas getting started：https://pandas.pydata.org/docs/getting_started/intro_tutorials/
-- scikit-learn model evaluation：https://scikit-learn.org/stable/modules/model_evaluation.html
-- Google ML Crash Course, Classification：https://developers.google.com/machine-learning/crash-course/classification
-- Google ML Crash Course, Training and Test Sets：https://developers.google.com/machine-learning/crash-course/training-and-test-sets/splitting-data
+- Bag-of-Words 统计一篇文本里出现了哪些词。
+- n-gram 可以保留少量局部顺序。
+- TF-IDF 会降低“到处都出现”的词的权重。
+- 文本最后会变成一个很宽、但大部分位置都是 0 的稀疏矩阵。
 
-## 实践任务
+### 评测指标
 
-1. 制作一个带标签的小数据集  
-   将第 2 周的 30 条文本扩展到至少 80 条，并为每条标注一个标签，例如：
-   - `positive`
-   - `negative`
-   - `neutral`
+需要能用自己的话解释：
 
-2. 数据统计  
-   使用 pandas 读取数据，输出：
-   - 总样本数。
-   - 每个类别数量。
-   - 文本长度均值、最大值、最小值。
-   - 类别分布柱状图。
+- accuracy：总体有多少预测正确。
+- precision：模型说是某类时，有多少是真的。
+- recall：真实属于某类的样本，有多少被找出来。
+- F1：precision 和 recall 的综合。
+- macro-F1：先算每一类 F1 再平均，类别不均衡时更值得看。
 
-3. 数据划分  
-   使用 scikit-learn 将数据分成训练集、验证集、测试集，比例建议 70/15/15。记录随机种子。
+## 推荐资源
 
-4. 指标计算
-   给定一个小型预测结果表，计算TP、FP、FN、Precision、Recall、F1指标。
+- scikit-learn 文本特征文档：https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
+- scikit-learn 模型评测：https://scikit-learn.org/stable/modules/model_evaluation.html
+- Google ML Crash Course，Classification：https://developers.google.com/machine-learning/crash-course/classification
+- 选读论文：Joulin et al., 2016, Bag of Tricks for Efficient Text Classification：https://arxiv.org/abs/1607.01759
 
-5. 实验日志  
-   使用 `templates/experiment_log_template.md` 记录本周数据统计实验。
+论文只读 Abstract、Introduction 和主结果表，知道“简单方法也可能是强 baseline”即可。
 
-## 最低要求
+## 本周实践
 
-- 能解释训练集和测试集的区别。
-- 能计算 Accuracy 和 F1。
-- 能用 pandas 读取 CSV。
-- 能保存一张图。
+### 基础实践
 
-## 挑战任务
+- 使用第 3 周数据。
+- 划分 train/test，基础较好时再加入 dev。
+- 用 `TfidfVectorizer` 提取特征。
+- 用 Logistic Regression 训练分类器。
+- 输出 accuracy 和 classification report。
+- 保存 5 个错误样例。
 
-- 尝试分层抽样，保证每个集合类别分布接近。
-- 人工检查 10 条可能标错的数据，并修正。
-- 写一段说明：为什么小数据集结果不稳定。
+### 标准实践
 
-## 验收标准
+在基础实践上补充：
 
-- 数据文件包含文本和标签两列。
-- 图表清楚展示类别分布。
-- 实验日志记录随机种子、数据路径和输出结果。
+- 加入 `DummyClassifier`。
+- 保存 train/dev/test 的样本 ID。
+- 输出 macro-F1 和混淆矩阵。
+- 比较 unigram 与 unigram + bigram。
+- 分析至少 10 个错误样例。
 
-## 自测问题
+错误可以先分成：
 
-1. 为什么测试集不能用于选择模型？
-2. 类别极度不均衡时，Accuracy 为什么可能很高但模型没用？
-3. Precision 和 Recall 哪个更适合“垃圾邮件拦截”？
-4. 为什么要保存原始数据和清洗后数据？
+- 文本太短；
+- 否定；
+- 需要上下文；
+- 领域词；
+- 标签模糊；
+- 可能标错。
+
+### 拓展实践
+
+任选一个：
+
+- 比较 word n-gram 和 character n-gram。
+- 多跑 3 个随机种子，看结果是否波动。
+- 手工计算一个类别的 TP、FP、FN 和 F1。
+
+## 本周最低要求
+
+- 跑通 TF-IDF + Logistic Regression。
+- 能解释 train/test、TF-IDF 和 accuracy。
+- 有一个结果表。
+- 分析至少 5 个错误样例。
+
+## 本周标准交付
+
+- 一页周报。
+- 文本分类代码或 notebook。
+- 一个包含 Dummy 和 TF-IDF 的结果表。
+- 一张混淆矩阵。
+- 10 个错误样例。
+- 3 个本周问题。
+
+## 导师检查点
+
+- 学生能否解释为什么需要 baseline？
+- 能否说明 TF-IDF 矩阵每一行和每一列是什么？
+- 能否解释 accuracy 和 macro-F1 的区别？
+- 是否在 test 上反复调参数？
+- 错误分析是否指向具体文本？
